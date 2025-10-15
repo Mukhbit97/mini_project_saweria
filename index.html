@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Support Platform - MVC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="shortcut icon" href="icon/icons-star32.png" type="image/x-icon">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #ff6584;
+            --success-color: #00b894;
+            --dark-color: #2d3436;
+            --light-color: #f5f3ff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .nav-link {
+            color: var(--dark-color) !important;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: 500;
+        }
+        
+        .creator-card {
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .creator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .creator-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .post-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a52d5;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            background-color: #00a884;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e54a6b;
+            transform: translateY(-2px);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary-color), #8b85ff);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+        
+        .saweria-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--light-color);
+            transition: all 0.3s;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner.active {
+            display: block;
+        }
+        
+        .otp-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1040;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .payment-modal.active {
+            display: flex;
+        }
+        
+        .payment-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .support-history-item {
+            border-left: 3px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            background: var(--light-color);
+            border-radius: 0 10px 10px 0;
+            padding: 15px;
+        }
+        
+        .ai-caption-result {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            border: 2px dashed var(--primary-color);
+        }
+        
+        .ai-caption-result.active {
+            display: block;
+        }
+        
+        .new-post-form {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .tab-content {
+            padding: 20px 0;
+        }
+        
+        .creator-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .creator-stat {
+            text-align: center;
+        }
+        
+        .creator-stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .saweria-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .post-action-btn {
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .post-action-btn:hover {
+            background: var(--light-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-heart-fill text-danger"></i> Saweria Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-page="creators">
+                            <i class="bi bi-people"></i> Creators
+                        </a>
+                    </li>
+                    <li class="nav-item" id="dashboardNavItem" style="display: none;">
+                        <a class="nav-link" href="#" data-page="dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item" id="logoutNavItem" style="display: none;">
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast">
+        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="notificationToast">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">
+                    Notification message
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Login Container -->
+    <div class="otp-container" id="otpContainer">
+        <h3 class="text-center mb-4">Login dengan OTP</h3>
+        <p class="text-center text-muted mb-4">Masukkan OTP yang ditampilkan di console browser</p>
+        <div class="mb-3">
+            <input type="text" class="form-control form-control-lg text-center" id="otpInput" placeholder="Masukkan OTP">
+        </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" id="loginAsFanBtn">Login sebagai Fan</button>
+            <button class="btn btn-secondary" id="loginAsCreatorBtn">Login sebagai Creator</button>
+        </div>
+        <div class="mt-3 text-center">
+            <small class="text-muted">OTP: <span id="otpDisplay" class="fw-bold">123456</span></small>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container mt-4" id="mainContainer" style="display: none;">
+        <!-- Creators Page -->
+        <div class="page active" id="creatorsPage">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">Temukan Creator Favoritmu</h2>
+                    <p class="text-muted">Dukung creator favoritmu dengan memberikan saweria (tip)</p>
+                </div>
+            </div>
+            
+            <div class="row" id="creatorsList">
+                <!-- Creator cards will be inserted here -->
+            </div>
+            
+            <!-- Creator Detail Section -->
+            <div class="row mt-4" id="creatorDetail" style="display: none;">
+                <div class="col-12">
+                    <button class="btn btn-outline-secondary mb-3" id="backToCreatorsBtn">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Daftar Creator
+                    </button>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <img src="" alt="Creator Avatar" class="creator-avatar mb-3" id="detailCreatorAvatar">
+                                    <h4 id="detailCreatorName"></h4>
+                                    <p class="text-muted" id="detailCreatorRole"></p>
+                                    <div class="creator-stats">
+                                        <div class="creator-stat">
+                                            <div class="creator-stat-number" id="detailCreatorPosts">0</div>
+                                            <small>Postingan</small>
+                                        </div>
+                                        <div class="creator-stat">
+                                            <div class="creator-stat-number" id="detailCreatorSupporters">0</div>
+                                            <small>Supporter</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary w-100 mt-3" id="supportCreatorBtn">
+                                        <i class="bi bi-heart-fill"></i> Beri Saweria
+                                    </button>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="mb-3">Postingan Terbaru</h5>
+                                    <div id="creatorPosts">
+                                        <!-- Posts will be inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboardPage">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">Dashboard Creator</h2>
+                    <p class="text-muted">Kelola akun dan lihat statistik saweria kamu</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="balance-card">
+                        <h5 class="mb-2">Total Saweria</h5>
+                        <h2 class="mb-0">Rp <span id="userBalance">0</span></h2>
+                        <small class="d-block mt-2 opacity-75">Total tip yang diterima</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="saweria-stats">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalSupporters">0</div>
+                                    <small>Total Supporter</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalPosts">0</div>
+                                    <small>Total Postingan</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="avgSupport">0</div>
+                                    <small>Rata-rata Saweria</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
+                                <i class="bi bi-plus-circle"></i> Postingan Baru
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                                <i class="bi bi-clock-history"></i> Riwayat Saweria
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                <i class="bi bi-graph-up"></i> Analytics
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="dashboardTabContent">
+                        <div class="tab-pane fade show active" id="posts" role="tabpanel">
+                            <div class="new-post-form">
+                                <h5 class="mb-3">Buat Postingan Baru</h5>
+                                <div class="mb-3">
+                                    <label for="postText" class="form-label">Teks Postingan</label>
+                                    <textarea class="form-control" id="postText" rows="3" placeholder="Tulis sesuatu yang menarik..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="postMedia" class="form-label">URL Media (Opsional)</label>
+                                    <input type="text" class="form-control" id="postMedia" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-primary" id="aiCaptionBtn">
+                                        <i class="bi bi-magic"></i> AI Caption Helper
+                                    </button>
+                                    <button class="btn btn-success" id="createPostBtn">
+                                        <i class="bi bi-plus-circle"></i> Buat Postingan
+                                    </button>
+                                </div>
+                                <div class="ai-caption-result" id="aiCaptionResult">
+                                    <h6><i class="bi bi-magic"></i> AI Caption Suggestion:</h6>
+                                    <p id="aiCaptionText"></p>
+                                    <button class="btn btn-sm btn-outline-primary" id="useAiCaptionBtn">Gunakan Caption Ini</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="history" role="tabpanel">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="mb-3">Riwayat Saweria</h5>
+                                    <div id="supportHistory">
+                                        <!-- Support history will be inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="analytics" role="tabpanel">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="mb-3">Analytics</h5>
+                                    <canvas id="analyticsChart" width="400" height="200"></canvas>
+                                    <div class="mt-3">
+                                        <h6>Top Supporters</h6>
+                                        <div id="topSupporters">
+                                            <!-- Top supporters will be listed here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Beri Saweria ke Creator</h5>
+                <button class="btn-close" id="closePaymentModal"></button>
+            </div>
+            <div class="mb-3">
+                <label for="supportAmount" class="form-label">Jumlah Saweria (Rp)</label>
+                <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input type="number" class="form-control" id="supportAmount" placeholder="10000" value="10000">
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="setAmount(10000)">Rp 10.000</button>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="setAmount(25000)">Rp 25.000</button>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="setAmount(50000)">Rp 50.000</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="setAmount(100000)">Rp 100.000</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="paymentMethod" class="form-label">Metode Pembayaran</label>
+                <select class="form-select" id="paymentMethod">
+                    <option value="transfer">Transfer Bank</option>
+                    <option value="ewallet">E-Wallet (Gopay/OVO/DANA)</option>
+                    <option value="card">Kartu Kredit/Debit</option>
+                    <option value="qris">QRIS</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="supportMessage" class="form-label">Pesan (Opsional)</label>
+                <textarea class="form-control" id="supportMessage" rows="2" placeholder="Tulis pesan dukungan..."></textarea>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" id="cancelPaymentBtn">Batal</button>
+                <button class="btn btn-primary" id="processPaymentBtn">
+                    <i class="bi bi-lock"></i> Proses Pembayaran Aman
+                </button>
+            </div>
+            <div class="loading-spinner mt-3" id="paymentLoading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Memproses pembayaran...</p>
+            </div>
+            <div class="alert alert-success mt-3" id="paymentSuccess" style="display: none;">
+                <i class="bi bi-check-circle-fill"></i> Pembayaran berhasil! Terima kasih atas saweria Anda.
+            </div>
+            <div class="alert alert-danger mt-3" id="paymentFailed" style="display: none;">
+                <i class="bi bi-x-circle-fill"></i> Pembayaran gagal. Silakan coba lagi.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Helper function for payment amount -->
+    <script>
+        function setAmount(amount) {
+            document.getElementById('supportAmount').value = amount;
+        }
+    </script>
+    
+    <!-- MVC Modules -->
+    <script type="module" src="js/apps.js"></script>
+</body>
+</html>
